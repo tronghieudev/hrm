@@ -124,4 +124,23 @@ class AppController extends Controller {
         return $this->_buildJson(true, $data, $extra);
     }
 
+    public function countDay($y,$m){ 
+        $date = "$y-$m-01";
+        $first_day = date('N',strtotime($date));
+        $first_sunday = 7 - $first_day + 1;
+        $last_day =  date('t',strtotime($date));
+        $days = array();
+        for($i=$first_sunday; $i<=$last_day; $i=$i+7 ){
+            $days[] = $i;
+        }
+        for($i= 7 - $first_day; $i<=$last_day; $i=$i+7 ){
+            if($i >0) {
+                $days[] = $i;
+            }
+        }
+        // return count($days);
+        $total_day = date('t', strtotime(date("$y-$m-t"))) - count($days);
+        return  $total_day;
+    }
+
 }

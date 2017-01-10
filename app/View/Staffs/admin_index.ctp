@@ -167,7 +167,6 @@
 						type: 'POST',
 						data: {id : id, time_in_date: time_in_date, time_in_time: time_in_time, time_out_date : time_out_date, time_out_time : time_out_time},
 					}).done(function(output) {
-						console.log(output);
 						if(output.status == 200) {
 							alert('Set over time success !');
 							$('#overtime').modal('hide');
@@ -192,6 +191,7 @@
 
 		    	e.preventDefault();
 		    	var id = $(this).data('id');
+		    	console.log(id);
 		    	$.ajax({
 		    		url: ADMIN+'/staffs/viewOvertime',
 		    		type: 'POST',
@@ -201,20 +201,28 @@
 		    		console.log(output);
 		    		var html = '';
 		    		var total_hours = 0;
-		    		$.each(output.data, function(index, val) {
-		    			
-		    			html += '<tr>';
-		    			html += '<td>'+val.UsersOvertime.time_in+'</td>';
-		    			html += '<td>'+val.UsersOvertime.time_out+'</td>';
-		    			var hour = (Date.parse(val.UsersOvertime.time_out) - Date.parse(val.UsersOvertime.time_in)) / 3600000;
-		    			html += '<td>'+ hour +'</td>';
-		    			html += '</tr>';
-		    			total_hours += hour;
-		    		});
-		    		$('#view-day-off tbody').html(html);
-		    		$('#total-hours').text(total_hours);
-		    		$('#view-day-off #view').attr('data-id', id);
-		    		$('#view-day-off').modal('show');
+		    		if(output.status == 200) {
+			    		$.each(output.data, function(index, val) {
+			    			
+			    			html += '<tr>';
+			    			html += '<td>'+val.UsersOvertime.time_in+'</td>';
+			    			html += '<td>'+val.UsersOvertime.time_out+'</td>';
+			    			var hour = (Date.parse(val.UsersOvertime.time_out) - Date.parse(val.UsersOvertime.time_in)) / 3600000;
+			    			html += '<td>'+ hour +'</td>';
+			    			html += '</tr>';
+			    			total_hours += hour;
+			    		});
+			    		$('#view-day-off tbody').html(html);
+			    		$('#total-hours').text(total_hours);
+			    		$('#view-day-off #view').attr('data-id', id);
+			    		$('#view-day-off').modal('show');
+			    	}else{
+						if(output.errors.valid) {
+							alert('Validate false !');
+						} else {
+							alert(output.errors.message);
+						}
+					}
 		    	});
 		    });
 
@@ -225,14 +233,12 @@
 		    	var id = $(this).data('id');
 		    	var month = $('#month').val();
 		    	var year = $('#year').val();
-		    	console.log(month);
 		    	$.ajax({
 		    		url: ADMIN+'/staffs/viewOvertime',
 		    		type: 'POST',
 		    		data: {id: id, month : month, year :year},
 		    	})
 		    	.done(function(output) {
-		    		console.log(output);
 		    		var html = '';
 		    		var total_hours = 0;
 		    		$.each(output.data, function(index, val) {
@@ -251,8 +257,147 @@
 		    		$('#view-day-off').modal('show');
 		    	});
 		    });
+
+		    // set day off
+		    $('.set-day-off').on('click', function(e) {
+
+		    	var users_id = $(this).data('id');
+		    	$('#modal-day-off .users_id').val(users_id);
+		    	$('#modal-day-off').modal('show');
+		    });
+
+		    //save day off
+		    $('#save-date-off').on('click', function(e) {
+
+		    	var users_id = $('#modal-day-off .users_id').val();
+		    	var day_start = $('#modal-day-off #day_start').val();
+		    	var days = $('#modal-day-off #number_days').val();
+		    	$.ajax({
+		    		url: ADMIN+'/staffs/setDaysOff',
+		    		type: 'POST',
+		    		data: {users_id: users_id, day_start : day_start, days : days},
+		    	})
+		    	.done(function(output) {
+
+		    		if(output.status == 200) {
+			    		alert(output.data.message);
+			    		$('#modal-day-off').modal('hide');
+			    	}else{
+						if(output.errors.valid) {
+							alert('Validate false !');
+						} else {
+							alert(output.errors.message);
+							
+						}
+					}
+		    	});
+		    });
+
+		    // set day off
+		    $('.set-day-leave').on('click', function(e) {
+
+		    	var users_id = $(this).data('id');
+		    	$('#modal-day-leave .users_id').val(users_id);
+		    	$('#modal-day-leave').modal('show');
+		    });
+
+		    //save day off
+		    $('#save-date-leave').on('click', function(e) {
+
+		    	var users_id = $('#modal-day-leave .users_id').val();
+		    	var day_start = $('#modal-day-leave #day_start').val();
+		    	var days = $('#modal-day-leave #number_days').val();
+		    	console.log(users_id+' '+day_start+' '+days);
+		    	$.ajax({
+		    		url: ADMIN+'/staffs/setDaysLeave',
+		    		type: 'POST',
+		    		data: {users_id: users_id, day_start : day_start, days : days},
+		    	})
+		    	.done(function(output) {
+		    		if(output.status == 200) {
+			    		alert(output.data.message);
+			    		$('#modal-day-leave').modal('hide');
+			    	}else{
+						if(output.errors.valid) {
+							alert('Validate false !');
+						} else {
+							alert(output.errors.message);
+							
+						}
+					}
+		    	});
+		    });
 		});
 	</script>
+
+	<!-- Modal set day leave -->
+	<div class="modal fade" id="modal-day-leave">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Set day leave</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-6">
+							<input class="users_id" value="" type="hidden"></input>
+							<div class="form-group">
+								<label>Day start</label>
+								<input class="form-control" type="date" value="<?= date('Y-m-d') ?>" id="day_start" name="day_start"></input>
+							</div>
+							
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label>Days</label>
+								<input class="form-control" type="number" value="1
+								" id="number_days" name="number_days"></input>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="save-date-leave">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal set day off -->
+	<div class="modal fade" id="modal-day-off">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Set day off</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-6">
+							<input class="users_id" value="" type="hidden"></input>
+							<div class="form-group">
+								<label>Day start</label>
+								<input class="form-control" type="date" value="<?= date('Y-m-d') ?>" id="day_start" name="day_start"></input>
+							</div>
+							
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label>Days</label>
+								<input class="form-control" type="number" value="" id="number_days" name="number_days"></input>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="save-date-off">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- Modal view Overtime -->
 	<div class="modal fade" id="view-day-off">
@@ -260,7 +405,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">View Day Off</h4>
+					<h4 class="modal-title">View Overtime</h4>
 				</div>
 				<div class="modal-body">
 					<div>
@@ -542,7 +687,19 @@
 			    <?php foreach($data as $item) { ?>
 		            <tr id="tr<?php echo $item['UsersProfile']['id']; ?>">
 		                <td><?php echo $item['UsersProfile']['id']; ?></td>
-		                <td class="name"><?php echo $item['UsersProfile']['fullname']; ?></td>
+		                <td class="name">
+		                <?php 
+		                	echo $this->Html->link(
+								$item['UsersProfile']['fullname'],
+								array(
+								    'controller' => 'staffs',
+								    'action' => 'show',
+								    'admin' => true,
+								    '?' => ['id' => $item['UsersProfile']['users_id']]
+								)
+							); 
+						?>
+</td>
 		                <td><?= $item['User']['email']; ?></td>
 		                
 		                <td><?= $item['UsersProfile']['phone_number']; ?></td>
@@ -554,7 +711,7 @@
 									<span class="caret"></span>
 								</button>
 								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-									<li class="update-salary" data-id="<?php echo $item['UsersProfile']['id']; ?>"><a href="#">Salary</a></li>
+									<li class="update-salary" data-id="<?php echo $item['UsersProfile']['users_id']; ?>"><a href="#">Salary</a></li>
 									<li class="update-avata" data-id="<?php echo $item['UsersProfile']['id']; ?>"><a href="#" >Avata</a></li>
 									<li class="update-cv" data-id="<?php echo $item['UsersProfile']['id']; ?>"><a href="#">CV</a></li>
 									<li>
@@ -565,9 +722,11 @@
 										    'admin' => true
 										)); ?>
 									</li>
-									<li><a href="" class="overtime" data-id="<?= $item['UsersProfile']['id']; ?>">Overtime</a></li>
-									<li><a href="#" class="view-overtime" data-id="<?= $item['UsersProfile']['id']; ?>">View overtime</a></li>
-									<li><a href="#" class="change-pass" data-id="<?= $item['UsersProfile']['id']; ?>">Reset Password</a></li>
+									<li><a href="" class="overtime" data-id="<?= $item['UsersProfile']['users_id']; ?>">Overtime</a></li>
+									<li><a href="#" class="view-overtime" data-id="<?= $item['UsersProfile']['users_id']; ?>">View overtime</a></li>
+									<li><a href="#" class="set-day-off" data-id="<?= $item['UsersProfile']['users_id']; ?>">Set day off</a></li>
+									<li><a href="#" class="set-day-leave" data-id="<?= $item['UsersProfile']['users_id']; ?>">Set day leave</a></li>
+									<li><a href="#" class="change-pass" data-id="<?= $item['UsersProfile']['users_id']; ?>">Reset Password</a></li>
 									<li role="separator" class="divider"></li>
 									<li><a href="#">Remove</a></li>
 								</ul>

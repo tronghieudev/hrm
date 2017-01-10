@@ -22,7 +22,9 @@ class AuthController extends AppController {
         parent::beforeFilter();
         $this->layout = false;
         $this->loadModel('User');
+        $this->loadModel('UsersProfile');
         $this->loadModel('Department');
+        
     }
 
     /**
@@ -115,15 +117,28 @@ class AuthController extends AppController {
 
             // check validate
             if(!$validUser) {
-                debug($this->User->validationErrors);die;
+
                 $this->set('errors', $this->User->validationErrors);
             } else {
 
                 $email = $this->request->data['email'];
                 $check_mail = explode('@', $email)[1];
                 if ($check_mail == 'nal.vn') {
+
+                    $this->Transaction->begin();
                     $user = $this->User->save(['password' => $this->request->data['password_update'], 'email' => $email, 'roles_id' => 2]);
-                    $this->set('success', 'Register success');
+                    $this->UsersProfile->validate = [];
+                    $this->UsersProfile->create();
+                    $profile = $this->UsersProfile->save(['users_id' => $user['User']['id']]);
+                    if ($profile) {
+
+                        $this->Transaction->commit();
+                        $this->set('success', 'Register success');
+                    } else {
+
+                        $this->Transaction->rollback();
+                        $this->set('error_mail', 'Register false!');
+                    }
                 } else {
                     $this->set('error_mail', 'Không phải mail NAL');
                 }

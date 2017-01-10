@@ -14,6 +14,8 @@ App::uses('UsersOvertime', 'Model');
 App::uses('Position', 'Model');
 App::uses('Department', 'Model');
 App::uses('Curency', 'Model');
+App::uses('UsersDaysOff', 'Model');
+App::uses('UsersDaysLeave', 'Model');
 
 /**
  * class position
@@ -39,6 +41,8 @@ class StaffsController extends  ADController {
         $this->loadModel('Department');
         $this->loadModel('Currency');
         $this->loadModel('UsersOvertime');
+        $this->loadModel('UsersDaysOff');
+        $this->loadModel('UsersDaysLeave');
         $this->layout = 'admin';
     }
 
@@ -46,11 +50,11 @@ class StaffsController extends  ADController {
      * function index - get list staff
     */
     public function admin_index() {
-        if($this->request->is('post')) {
-            debug(date('Y-m-d', strtotime($this->request->data['time_in']['date'])).' '.date('H:i:s', strtotime($this->request->data['time_in']['time'])));die;
-        }else{
-            // echo 1;die;
-        }
+        // if($this->request->is('post')) {
+        //     debug(date('Y-m-d', strtotime($this->request->data['time_in']['date'])).' '.date('H:i:s', strtotime($this->request->data['time_in']['time'])));die;
+        // }else{
+        //     // echo 1;die;
+        // }
         $input = $this->request->query;
         $conditions = [];
         if(!empty($input['fullname'])) {
@@ -72,9 +76,9 @@ class StaffsController extends  ADController {
             $this->paginate['conditions'] = array_merge($this->paginate['conditions'], $conditions);
         }
         $this->Paginator->settings = $this->paginate;
-        // debug($this->Paginator->settings);die;
         $data = $this->Paginator->paginate('UsersProfile');
         $currencies = $this->Currency->find('list', ['conditions' => ['Currency.status' => 1]]);
+
         $this->set('currencies', $currencies);
         $this->set('data', $data);
     }
@@ -414,6 +418,7 @@ class StaffsController extends  ADController {
         }
 
         $id = $this->request->data['id'];
+        // debug($id);die;
         $conditions = [];
         if (isset($this->request->data['month']) && isset($this->request->data['year'])) {
             $conditions = array(
@@ -424,7 +429,7 @@ class StaffsController extends  ADController {
         } else {
             $conditions = array(
                 'UsersOvertime.users_id' => $id,
-                'UsersOvertime.time_in >=' => date('Y-m-d', time()),
+                'UsersOvertime.time_in >=' => date('Y-m-01', time()),
                 'UsersOvertime.time_out <=' => date('Y-m-t 23:59:59', time())
             );
         }
@@ -432,5 +437,160 @@ class StaffsController extends  ADController {
             'conditions' => $conditions
         ));
         return $this->_trueJson($data);
+    }
+
+    public function admin_setDaysOff() {
+
+        if(empty($this->request->data['users_id'])) {
+            return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Data null']);
+        }
+
+        $this->UsersDaysOff->set($this->request->data);
+
+        if (!$this->UsersDaysOff->validates()) {
+            return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Validate false']);
+        }
+
+        $this->UsersDaysOff->create();
+        $result = $this->UsersDaysOff->save($this->request->data);
+        if ($result) {
+            return $this->_trueJson(['message' => 'Set day off success']);
+        } else {
+            return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Set day off false']);
+        }
+    }
+
+    public function admin_setDaysLeave() {
+
+        if(empty($this->request->data['users_id'])) {
+            return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Data null']);
+        }
+        
+        $this->UsersDaysLeave->set($this->request->data);
+
+        if (!$this->UsersDaysLeave->validates()) {
+            return $this->_falseJson(Constants::BAD_REQUEST, null, $this->UsersDaysLeave->validationErrors);
+        }
+
+        $id = $this->request->data['users_id'];
+        $user = $this->User->findById($id);
+        if ($user) {
+            $days_leave = $user['User']['days_leave'];
+
+            // check day leave
+
+            if ($days_leave <= 0) {
+                return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Bạn đã hết ngày nghĩ phép']);
+            }
+
+            if ($days_leave - $this->request->data['days'] < 12 - date('m')) {
+                return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Số ngày nghỉ phép của bạn vượt qua mức cho phép']);
+            }
+
+            $this->UsersDaysLeave->create();
+            $result = $this->UsersDaysLeave->save($this->request->data);
+            if ($result) {
+                // debug($id); die;
+                $days = $days_leave - $this->request->data['days'];
+                $this->User->id = $id;
+                $this->User->validate = [];
+                $this->User->save(['id' => $id, 'days_leave' => $days]);
+                return $this->_trueJson(['message' => 'Set day off success']);
+            } else {
+                return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Set day off false']);
+            }
+        } else {
+            return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'User null']);
+        }
+    }
+
+    public function admin_show() {
+        
+        if (!$this->request->query['id']) {
+            return $this->redirect(['action' => 'index']);
+        }
+        $id = $this->request->query['id'];
+        
+        $month = date('m');
+        $year = date('Y');
+
+        if(isset($this->request->query['month']) && $this->request->query['month'] > 0 && $this->request->query['month'] <= 12) {
+            $month = $this->request->query['month'];
+        }
+
+        if(isset($this->request->query['year']) && $this->request->query['year'] > 0 && $this->request->query['year'] <= 12) {
+            $year = $this->request->query['year'];
+        }
+
+        $this->User->hasMany = [];
+
+        $options = [];
+        $options['fields'] = [
+            'Salary.salary',
+            'Salary.id',
+            'UsersDaysLeave.day_start',
+            'UsersDaysLeave.days',
+            'UsersDaysOff.day_start',
+            'UsersDaysOff.days',
+            'UsersDaysOff.id',
+
+
+        ];
+        $options['order'] = ['Salary.created' => 'DESC'];
+        $options['joins'] = [
+            [
+                'table' => 'users_salarys',
+                'alias' => 'Salary',
+                'type' => 'LEFT',
+
+                'conditions' => array(
+                    'User.id = Salary.users_id',
+                    'Salary.created <=' => date('Y-m-d'),
+                ),
+            ],
+            [
+                'table' => 'users_overtimes',
+                'alias' => 'UsersOvertime',
+                'type' => 'LEFT',
+                'conditions' => array(
+                    'User.id = UsersOvertime.users_id',
+                )
+            ],
+            [
+                'table' => 'users_days_offs',
+                'alias' => 'UsersDaysOff',
+                'type' => 'LEFT',
+                'conditions' => array(
+                    'User.id = UsersDaysOff.users_id',
+                    'UsersDaysOff.day_start >=' => date("$year-$month-01"),
+                    'UsersDaysOff.day_start <=' => date("$year-$month-t"),
+                )
+            ],
+            [
+                'table' => 'users_days_leaves',
+                'alias' => 'UsersDaysLeave',
+                'type' => 'LEFT',
+                'conditions' => array(
+                    'User.id = UsersDaysLeave.users_id',
+                    'UsersDaysLeave.day_start >=' => date("$year-$month-01"),
+                    'UsersDaysLeave.day_start <=' => date("$year-$month-t"),
+                )
+            ],
+        ];
+        // debug($options);die;
+        $options['conditions'] = [
+            'User.id' => $id,
+        ];
+
+        $data = $this->User->find('all', $options);
+        // debug($data);die;
+        if(!$data) {
+            return $this->redirect(['action' => 'index']);
+        }
+
+        
+        debug($data);
+        $this->set('data', $data);
+        $this->set('day', $this->countDay($year, $month));
     }
 }

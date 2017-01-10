@@ -32,16 +32,24 @@ class User extends AppModel {
         ]
     ];
 
-        public $hasMany = array(
-            'UsersOvertime' => array(
-                'className' => 'UsersOvertime',
-                'foreignKey' => 'users_id'
-            ),
-            'UsersProfile' => array(
-                'className' => 'UsersProfile',
-                'foreignKey' => 'users_id'
-            ),
-        );
+    public $hasMany = array(
+        'UsersOvertime' => array(
+            'className' => 'UsersOvertime',
+            'foreignKey' => 'users_id'
+        ),
+        'UsersProfile' => array(
+            'className' => 'UsersProfile',
+            'foreignKey' => 'users_id'
+        ),
+        'UsersDaysOff' => array(
+            'className' => 'UsersDaysOff',
+            'foreignKey' => 'users_id'
+        ),
+        'UsersDaysLeave' => array(
+            'className' => 'UsersDaysLeave',
+            'foreignKey' => 'users_id'
+        ),
+    );
 
     public function beforeSave($option = []) {
 
