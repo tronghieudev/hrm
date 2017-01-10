@@ -66,7 +66,7 @@ class AppController extends Controller {
      *
      * @return bool
      */
-    public function _buildJson($status, $result = null, $extra = []) {
+    public function _buildJson($status, $result = null, $extra = array()) {
         $response = [
             'status' => Constants::OK,
             'message' => 'OK',
