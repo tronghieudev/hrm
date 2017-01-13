@@ -15,7 +15,7 @@ App::uses('AuthComponent', 'Controller/Component');
 */
 
 class User extends AppModel {
-
+    public $actsAs = array('Containable');
     // relationship models
     public $belongsTo = [
         'Role' => [
@@ -47,6 +47,10 @@ class User extends AppModel {
         ),
         'UsersDaysLeave' => array(
             'className' => 'UsersDaysLeave',
+            'foreignKey' => 'users_id'
+        ),
+        'UsersSalarysSocialInsurance' => array(
+            'className' => 'UsersSalarysSocialInsurance',
             'foreignKey' => 'users_id'
         ),
     );

@@ -82,7 +82,6 @@ class AppController extends Controller {
         }
 
         $this->layout = $this->autoRender = false;
-//        $this->response->statusCode($response['status']);
         $this->response->type('application/json');
         $this->response->body(json_encode($response));
 

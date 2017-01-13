@@ -10,6 +10,7 @@
 App::uses('ADController', 'Controller');
 App::uses('User', 'Model');
 App::uses('UsersProfile', 'Model');
+App::uses('UsersSalary', 'Model');
 App::uses('UsersOvertime', 'Model');
 App::uses('Position', 'Model');
 App::uses('Department', 'Model');
@@ -29,7 +30,7 @@ class StaffsController extends  ADController {
     public $paginate = array(
         'limit' => 20,
         'conditions' => array(
-            'User.status' => 1
+            'User.status' => Constants::STATUS_LIVE
         ),
     );
 
@@ -43,6 +44,9 @@ class StaffsController extends  ADController {
         $this->loadModel('UsersOvertime');
         $this->loadModel('UsersDaysOff');
         $this->loadModel('UsersDaysLeave');
+        $this->loadModel('UsersSalary', 'Model');
+        $this->loadModel('UsersSalarysSocialInsurance', 'Model');
+        
         $this->layout = 'admin';
     }
 
@@ -50,11 +54,7 @@ class StaffsController extends  ADController {
      * function index - get list staff
     */
     public function admin_index() {
-        // if($this->request->is('post')) {
-        //     debug(date('Y-m-d', strtotime($this->request->data['time_in']['date'])).' '.date('H:i:s', strtotime($this->request->data['time_in']['time'])));die;
-        // }else{
-        //     // echo 1;die;
-        // }
+
         $input = $this->request->query;
         $conditions = [];
         if(!empty($input['fullname'])) {
@@ -77,7 +77,7 @@ class StaffsController extends  ADController {
         }
         $this->Paginator->settings = $this->paginate;
         $data = $this->Paginator->paginate('UsersProfile');
-        $currencies = $this->Currency->find('list', ['conditions' => ['Currency.status' => 1]]);
+        $currencies = $this->Currency->find('list', ['conditions' => ['Currency.status' => Constants::STATUS_LIVE]]);
 
         $this->set('currencies', $currencies);
         $this->set('data', $data);
@@ -91,6 +91,31 @@ class StaffsController extends  ADController {
 
         //method post
         if($this->request->is('post')) {
+
+            // tính lương cơ bản
+            $salaryBassic =  $this->request->data['salary'];
+            if ($this->request->data['money_phone']) {
+                $salaryBassic -= $this->request->data['money_phone'];
+            }
+            if ($this->request->data['money_lunch']) {
+                $salaryBassic -= $this->request->data['money_lunch'];
+            }
+            if ($this->request->data['money_costume']) {
+                $salaryBassic -= $this->request->data['money_costume'];
+            }
+            if ($this->request->data['money_gasoline']) {
+                $salaryBassic -= $this->request->data['money_gasoline'];
+            }
+            if ($this->request->data['money_house']) {
+                $salaryBassic -= $this->request->data['money_house'];
+            }
+            if ($this->request->data['money_complete']) {
+                $salaryBassic -= $this->request->data['money_complete'];
+            }
+            if ($this->request->data['money_efficiency']) {
+                $salaryBassic -= $this->request->data['money_efficiency'];
+            }
+
             $validator = $this->User->validator();
             unset($validator['password_update']);
             unset($validator['re_password_update']);
@@ -112,14 +137,30 @@ class StaffsController extends  ADController {
                 $this->Transaction->begin();
                 $email = $this->request->data['email'];
                 $username = explode('@', $email)[0];
-                $user = $this->User->save(['password' => '12345678', 'email' => $email, 'username' => $username, 'roles_id' => 2]);
+                $user = $this->User->save(['password' => '12345678', 'email' => $email, 'username' => $username, 'roles_id' => Constants::USER]);
                 if($user) {
+
+                    // Lưu lương nhân viên
+                    $this->UsersSalary->create();
+                    $salary = $this->UsersSalary->save(['status' => 1, 'salary' => $this->request->data['salary'], 'users_id' => $user['User']['id']]);
+
+                    // Lưu thông tin nhân viên
                     $data = $this->request->data;
                     $data['users_id'] = $user['User']['id'];
-                    //  birthday
+
+                    //  Birthday
                     $data['birthday'] = $data['birthday']['y'].'-'.$data['birthday']['m'].'-'.$data['birthday']['d'];
                     $userProfile = $this->UsersProfile->save($data);
-                    if($userProfile) {
+
+                    // Lưu lương cơ bản
+                    $this->UsersSalarysSocialInsurance->create();
+                    $social = $this->UsersSalarysSocialInsurance->save([
+                        'status' => 1, 
+                        'salary' => $salaryBassic, 
+                        'users_id' => $user['User']['id']
+                    ]);
+
+                    if($userProfile && $salary && $social) {
                         $this->Transaction->commit();
                         $this->Session->setFlash('Create staff success !');
                         $this->redirect(['action' => 'index']);
@@ -131,8 +172,8 @@ class StaffsController extends  ADController {
         }
 
         // method get
-        $listPostions = $this->Position->find('list', ['conditions' => ['Position.status' => 1]]);
-        $listDepartments = $this->Department->find('list', ['conditions' => ['Department.status' => 1]]);
+        $listPostions = $this->Position->find('list', ['conditions' => ['Position.status' => Constants::STATUS_LIVE]]);
+        $listDepartments = $this->Department->find('list', ['conditions' => ['Department.status' => Constants::STATUS_LIVE]]);
         $this->set(['listPostions' => $listPostions, 'listDepartments' => $listDepartments]);
     }
 
@@ -155,8 +196,31 @@ class StaffsController extends  ADController {
 
         $this->autoRender = false;
         if($this->request->is('ajax')) {
-            $id = $this->request->data['id'];
-            $data = $this->UsersProfile->findById($id);
+            $id = $this->request->data['users_id'];
+            $data = $this->User->find('first', [
+                'conditions' => [
+                    'User.id' => $id
+                ],
+                'fields' => [
+                    'User.*',
+                    'Salary.salary',
+                    'Salary.id',
+                ],
+                'joins' => [
+                    [
+                        'table' => 'users_salarys',
+                        'alias' => 'Salary',
+                        'type' => 'LEFT',
+
+                        'conditions' => array(
+                            'User.id = Salary.users_id',
+                            'Salary.created <=' => date('Y-m-d 23:59:59'),
+                            'Salary.status ' => Constants::STATUS_LIVE,
+                        ),
+                    ]
+                ],
+                'contain' => []
+            ]);
             if($data) {
                 return $this->_trueJson($data);
             }
@@ -185,26 +249,32 @@ class StaffsController extends  ADController {
                     'message' => 'A gender is required',
                     'required' => true
                 )
-            ],
-            'currencies_id' => [
-                'required' => array(
-                    'rule' => array('notBlank'),
-                    'message' => 'A currency is required',
-                    'required' => true
-                )
             ]
         ];
         if($this->request->is('ajax')) {
-            $this->UsersProfile->validate = $validate;
-            $this->UsersProfile->set($this->request->data);
+            $this->UsersSalary->validate = $validate;
+            $this->UsersSalary->set($this->request->data);
 
             // check validate
-            if (!$this->UsersProfile->validates()) {
-                return $this->_falseJson(Constants::BAD_REQUEST, null, $this->UsersProfile->validationErrors);
+            if (!$this->UsersSalary->validates()) {
+                return $this->_falseJson(Constants::BAD_REQUEST, null, $this->UsersSalary->validationErrors);
             }
 
             // update salary
-            $result = $this->UsersProfile->save($this->request->data);
+            $check = $this->UsersSalary->find('all', [
+                'conditions' => [
+                    'UsersSalary.users_id' => $this->request->data['users_id']
+                ]
+            ]);
+
+            if ($check) {
+                $this->UsersSalary->updateAll(
+                    ['status' => 0], 
+                    ['users_id' => $this->request->data['users_id']]
+                );
+            }
+            $this->UsersSalary->create();
+            $result = $this->UsersSalary->save($this->request->data);
             if ($result) {
 
                 return $this->_trueJson(['message' => 'Update salary success!']);
@@ -359,12 +429,12 @@ class StaffsController extends  ADController {
     function admin_setOvertime() {
 
         $this->autoRender = false;
-//        return 1;
         if($this->request->is('ajax')) {
 
             $input = [];
-
             // convert input
+            $input['type'] = $this->request->data['type'];
+            $input['status'] = $this->request->data['1'];
             $input['users_id'] = $this->request->data['id'];
             $input['time_in'] = date('Y-m-d', strtotime($this->request->data['time_in_date'])).' '.date('H:i:s', strtotime($this->request->data['time_in_time']));
             $input['time_out'] = date('Y-m-d', strtotime($this->request->data['time_out_date'])).' '.date('H:i:s', strtotime($this->request->data['time_out_time']));
@@ -418,7 +488,6 @@ class StaffsController extends  ADController {
         }
 
         $id = $this->request->data['id'];
-        // debug($id);die;
         $conditions = [];
         if (isset($this->request->data['month']) && isset($this->request->data['year'])) {
             $conditions = array(
@@ -478,7 +547,6 @@ class StaffsController extends  ADController {
             $days_leave = $user['User']['days_leave'];
 
             // check day leave
-
             if ($days_leave <= 0) {
                 return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Bạn đã hết ngày nghĩ phép']);
             }
@@ -489,19 +557,27 @@ class StaffsController extends  ADController {
 
             $this->UsersDaysLeave->create();
             $result = $this->UsersDaysLeave->save($this->request->data);
+
             if ($result) {
-                // debug($id); die;
+
                 $days = $days_leave - $this->request->data['days'];
                 $this->User->id = $id;
                 $this->User->validate = [];
                 $this->User->save(['id' => $id, 'days_leave' => $days]);
                 return $this->_trueJson(['message' => 'Set day off success']);
             } else {
+
                 return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Set day off false']);
             }
         } else {
             return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'User null']);
         }
+    }
+
+    // set salary bao hiem xa hoi
+
+    public function admin_setBHXX() {
+
     }
 
     public function admin_show() {
@@ -522,19 +598,11 @@ class StaffsController extends  ADController {
             $year = $this->request->query['year'];
         }
 
-        $this->User->hasMany = [];
-
         $options = [];
         $options['fields'] = [
+            'User.*',
             'Salary.salary',
             'Salary.id',
-            'UsersDaysLeave.day_start',
-            'UsersDaysLeave.days',
-            'UsersDaysOff.day_start',
-            'UsersDaysOff.days',
-            'UsersDaysOff.id',
-
-
         ];
         $options['order'] = ['Salary.created' => 'DESC'];
         $options['joins'] = [
@@ -545,52 +613,87 @@ class StaffsController extends  ADController {
 
                 'conditions' => array(
                     'User.id = Salary.users_id',
-                    'Salary.created <=' => date('Y-m-d'),
+                    'Salary.created <=' => date('Y-m-d 23:59:59'),
+                    'Salary.status' => Constants::STATUS_LIVE,
                 ),
-            ],
-            [
-                'table' => 'users_overtimes',
-                'alias' => 'UsersOvertime',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = UsersOvertime.users_id',
-                )
-            ],
-            [
-                'table' => 'users_days_offs',
-                'alias' => 'UsersDaysOff',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = UsersDaysOff.users_id',
-                    'UsersDaysOff.day_start >=' => date("$year-$month-01"),
-                    'UsersDaysOff.day_start <=' => date("$year-$month-t"),
-                )
-            ],
-            [
-                'table' => 'users_days_leaves',
-                'alias' => 'UsersDaysLeave',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = UsersDaysLeave.users_id',
-                    'UsersDaysLeave.day_start >=' => date("$year-$month-01"),
-                    'UsersDaysLeave.day_start <=' => date("$year-$month-t"),
-                )
-            ],
+            ]
         ];
-        // debug($options);die;
+
         $options['conditions'] = [
             'User.id' => $id,
         ];
 
-        $data = $this->User->find('all', $options);
-        // debug($data);die;
+        $options['contain'] = [
+            'UsersDaysLeave' => [
+                'conditions' => [
+                    'UsersDaysLeave.day_start >=' => date("$year-$month-01"),
+                    'AND' => [
+                        'UsersDaysLeave.day_start <=' => date("$year-$month-t"),
+                    ]
+                    
+                ],
+                'fields' => array('sum(UsersDaysLeave.days) AS total'),
+                
+            ],
+            'UsersDaysOff' => [
+                'conditions' => [
+                    'UsersDaysOff.status' => 1,
+                    'UsersDaysOff.day_start >=' => date("$year-$month-01"),
+                    'AND' => [
+                        'UsersDaysOff.day_start <=' => date("$year-$month-t"),
+                    ],
+                               
+                ],
+                'fields' => array('sum(UsersDaysOff.days) AS total'),
+                
+            ],
+            'UsersOvertime' => [
+                'conditions' => [
+                    'UsersOvertime.status' => 1,
+                    'UsersOvertime.time_in >=' => date("$year-$month-01"),
+                    'AND' => [
+                        'UsersOvertime.time_in <=' => date("$year-$month-t 23:59:59"),
+                    ],
+                    
+                ],
+            ],
+            'UsersSalarysSocialInsurance' => [
+                'conditions' => [
+                    'UsersSalarysSocialInsurance.created <=' => date("$year-$month-t 23:59:59"),
+                    'UsersSalarysSocialInsurance.status' => 1
+                ],
+            ]
+        ];
+
+        $data = $this->User->find('first', $options);
+        
+        $overtime = [
+            'day_normal' => 0,
+            'day_off' => 0,
+            'holiday' => 0
+        ];
+
+        foreach ($data['UsersOvertime'] as $value) {
+            switch ($value['type']) {
+                case Constants::TYPE_DAY_NORMAL:
+                    $overtime['day_normal'] += (strtotime($value['time_out']) - strtotime($value['time_in'])) / 3600;
+                    break;
+                case Constants::TYPE_DAY_OFF:
+                    $overtime['day_off'] += (strtotime($value['time_out']) - strtotime($value['time_in'])) / 3600;
+                    break;
+
+                default:
+                    $overtime['holiday'] += (strtotime($value['time_out']) - strtotime($value['time_in'])) / 3600;
+                    break;
+            }
+        }
+
         if(!$data) {
             return $this->redirect(['action' => 'index']);
         }
 
-        
-        debug($data);
         $this->set('data', $data);
+        $this->set('overtime', $overtime);
         $this->set('day', $this->countDay($year, $month));
     }
 }

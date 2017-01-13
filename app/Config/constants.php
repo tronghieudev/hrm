@@ -21,4 +21,14 @@ class Constants {
     // url upload file
     const AVATA_URL = 'img/avata/';
     const CV_URL = 'files/cv/';
+
+    // type overtime
+    const TYPE_DAY_NORMAL = 1;
+    const TYPE_DAY_OFF = 2;
+    const TYPE_HOLIDAY = 3;
+
+
+    // status 
+    const STATUS_LIVE =1;
+
 }

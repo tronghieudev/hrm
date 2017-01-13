@@ -24,22 +24,37 @@
         </li>
         <li class="">
             <a href="<?php echo $this->Html->url(['controller' => 'positions', 'action' => 'index', 'admin' => true], true ); ?>">
-                <i class="fa fa-dashboard"></i> <span>Positions</span>
+                <i class="fa fa-dashboard"></i> <span>Vị trí trong công ty</span>
             </a>
         </li>
         <li class="">
             <a href="<?php echo $this->Html->url(['controller' => 'positions', 'action' => 'index', 'admin' => true], true ); ?>">
-                <i class="fa fa-dashboard"></i> <span>Departments</span>
+                <i class="fa fa-dashboard"></i> <span>Team</span>
             </a>
         </li>
-        <li class="">
+        <!-- <li class="">
             <a href="<?php echo $this->Html->url(['controller' => 'currencies', 'action' => 'index', 'admin' => true], true ); ?>">
                 <i class="fa fa-dashboard"></i> <span>Currency</span>
             </a>
-        </li>
+        </li> -->
         <li class="">
             <a href="<?php echo $this->Html->url(['controller' => 'staffs', 'action' => 'index', 'admin' => true], true ); ?>">
-                <i class="fa fa-dashboard"></i> <span>Staffs</span>
+                <i class="fa fa-dashboard"></i> <span>QL Nhân viên</span>
+            </a>
+        </li>
+        <li class="">
+            <a href="<?php echo $this->Html->url(['controller' => 'overtimes', 'action' => 'index', 'admin' => true], true ); ?>">
+                <i class="fa fa-dashboard"></i> <span>QL OT</span>
+            </a>
+        </li>
+        <li class="">
+            <a href="<?php echo $this->Html->url(['controller' => 'dayoffs', 'action' => 'index', 'admin' => true], true ); ?>">
+                <i class="fa fa-dashboard"></i> <span>QL Ngày nghỉ</span>
+            </a>
+        </li>
+        <li class="">
+            <a href="<?php echo $this->Html->url(['controller' => 'dayleaves', 'action' => 'index', 'admin' => true], true ); ?>">
+                <i class="fa fa-dashboard"></i> <span>QL Ngày phép</span>
             </a>
         </li>
     </ul>

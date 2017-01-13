@@ -13,6 +13,7 @@
 <?php
     echo $this->Html->script('date.js');
 ?>
+
 <?php
     echo $this->fetch('extra-lib');
 ?>

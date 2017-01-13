@@ -17,7 +17,7 @@ class ADController extends AppController {
         parent::beforeFilter();
         $role = $this->Auth->user()['roles_id'];
         if($role != Constants::ADMIN) {
-            $this->redirect(['controller' => 'auth','action' => 'notPermission']);
+            $this->redirect(['controller' => 'auth','action' => 'notPermission', 'admin'=> false]);
         }
     }
 }

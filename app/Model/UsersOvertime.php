@@ -11,4 +11,10 @@ App::uses('AppModel', 'Model');
 
 class UsersOvertime extends AppModel {
 	
+	public $belongsTo = [
+        'User' => [
+            'className' => 'User',
+            'foreignKey' => 'users_id'
+        ]
+    ];
 }

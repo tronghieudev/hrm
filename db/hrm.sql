@@ -2,10 +2,10 @@
 -- version 4.5.1
 -- http://www.phpmyadmin.net
 --
--- Host: 127.0.0.1
--- Generation Time: Jan 06, 2017 at 05:18 AM
--- Server version: 10.1.13-MariaDB
--- PHP Version: 5.6.21
+-- Client :  127.0.0.1
+-- Généré le :  Ven 13 Janvier 2017 à 03:44
+-- Version du serveur :  10.1.13-MariaDB
+-- Version de PHP :  5.6.21
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,13 +17,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `hrm`
+-- Base de données :  `hrm`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `calendars`
+-- Structure de la table `calendars`
 --
 
 CREATE TABLE `calendars` (
@@ -38,7 +38,7 @@ CREATE TABLE `calendars` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `calendars`
+-- Contenu de la table `calendars`
 --
 
 INSERT INTO `calendars` (`id`, `users_id`, `time_in`, `time_out`, `time_cancel`, `status`, `created`, `modified`) VALUES
@@ -50,7 +50,7 @@ INSERT INTO `calendars` (`id`, `users_id`, `time_in`, `time_out`, `time_cancel`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `calendar_details`
+-- Structure de la table `calendar_details`
 --
 
 CREATE TABLE `calendar_details` (
@@ -63,7 +63,7 @@ CREATE TABLE `calendar_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `calendar_details`
+-- Contenu de la table `calendar_details`
 --
 
 INSERT INTO `calendar_details` (`id`, `calendars_id`, `time`, `check`, `created`, `modified`) VALUES
@@ -94,7 +94,7 @@ INSERT INTO `calendar_details` (`id`, `calendars_id`, `time`, `check`, `created`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `currencies`
+-- Structure de la table `currencies`
 --
 
 CREATE TABLE `currencies` (
@@ -107,7 +107,7 @@ CREATE TABLE `currencies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `currencies`
+-- Contenu de la table `currencies`
 --
 
 INSERT INTO `currencies` (`id`, `name`, `symbol`, `status`, `created`, `modified`) VALUES
@@ -117,7 +117,7 @@ INSERT INTO `currencies` (`id`, `name`, `symbol`, `status`, `created`, `modified
 -- --------------------------------------------------------
 
 --
--- Table structure for table `departments`
+-- Structure de la table `departments`
 --
 
 CREATE TABLE `departments` (
@@ -129,7 +129,7 @@ CREATE TABLE `departments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `departments`
+-- Contenu de la table `departments`
 --
 
 INSERT INTO `departments` (`id`, `name`, `status`, `created`, `modified`) VALUES
@@ -147,7 +147,7 @@ INSERT INTO `departments` (`id`, `name`, `status`, `created`, `modified`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `positions`
+-- Structure de la table `positions`
 --
 
 CREATE TABLE `positions` (
@@ -159,7 +159,7 @@ CREATE TABLE `positions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `positions`
+-- Contenu de la table `positions`
 --
 
 INSERT INTO `positions` (`id`, `name`, `status`, `created`, `modified`) VALUES
@@ -173,7 +173,7 @@ INSERT INTO `positions` (`id`, `name`, `status`, `created`, `modified`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `roles`
+-- Structure de la table `roles`
 --
 
 CREATE TABLE `roles` (
@@ -184,7 +184,7 @@ CREATE TABLE `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `roles`
+-- Contenu de la table `roles`
 --
 
 INSERT INTO `roles` (`id`, `name`, `created`, `modified`) VALUES
@@ -194,7 +194,7 @@ INSERT INTO `roles` (`id`, `name`, `created`, `modified`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Structure de la table `users`
 --
 
 CREATE TABLE `users` (
@@ -205,24 +205,83 @@ CREATE TABLE `users` (
   `positions_id` int(11) NOT NULL,
   `roles_id` int(11) NOT NULL,
   `departments_id` int(11) NOT NULL,
+  `days_leave` int(11) NOT NULL DEFAULT '12',
+  `money_efficiency` int(11) DEFAULT NULL,
+  `money_complete` int(11) DEFAULT NULL,
+  `money_house` int(11) DEFAULT NULL,
+  `money_gasoline` int(11) DEFAULT NULL,
+  `money_costume` int(11) DEFAULT NULL,
+  `money_phone` int(11) DEFAULT NULL,
+  `money_lunch` int(11) DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT '1',
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `users`
+-- Contenu de la table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `username`, `password`, `positions_id`, `roles_id`, `departments_id`, `status`, `created`, `modified`) VALUES
-(1, 'admin@gmail.com', 'admin', '832e569c33de9e8b4660f960c3af67383b885210', 1, 1, 1, 1, '2016-12-07 00:00:00', '2016-12-30 13:34:01'),
-(12, 'hieunt@nal.vn', '', '832e569c33de9e8b4660f960c3af67383b885210', 0, 2, 1, 1, '2017-01-05 09:39:27', '2017-01-05 09:39:27'),
-(17, 'chienmadondoc@nal.vn', '', '832e569c33de9e8b4660f960c3af67383b885210', 0, 2, 3, 1, '2017-01-05 13:56:26', '2017-01-05 13:56:26');
+INSERT INTO `users` (`id`, `email`, `username`, `password`, `positions_id`, `roles_id`, `departments_id`, `days_leave`, `money_efficiency`, `money_complete`, `money_house`, `money_gasoline`, `money_costume`, `money_phone`, `money_lunch`, `status`, `created`, `modified`) VALUES
+(1, 'admin@gmail.com', 'admin', '832e569c33de9e8b4660f960c3af67383b885210', 1, 1, 1, 12, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2016-12-07 00:00:00', '2016-12-30 13:34:01'),
+(18, 'chienmadondoc@gmail.com', 'chienmadondoc', '3c46a4482ef09289251adb66f8e7e8ea71f4ac1a', 1, 2, 1, 11, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2017-01-09 10:38:35', '2017-01-12 10:33:25'),
+(25, 'hieunt@nal.vn', 'hieunt', '3c46a4482ef09289251adb66f8e7e8ea71f4ac1a', 1, 2, 5, 12, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2017-01-11 17:22:58', '2017-01-11 17:22:58'),
+(26, 'tronghieudev@nal.vn', 'tronghieudev', '3c46a4482ef09289251adb66f8e7e8ea71f4ac1a', 1, 2, 1, 12, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 1, '2017-01-12 15:25:12', '2017-01-12 15:25:12'),
+(27, 'chienmadondo123123123c@gmail.com', 'chienmadondo123123123c', '3c46a4482ef09289251adb66f8e7e8ea71f4ac1a', 1, 2, 1, 12, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1, '2017-01-12 16:05:27', '2017-01-12 16:05:27');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users_overtimes`
+-- Structure de la table `users_days_leaves`
+--
+
+CREATE TABLE `users_days_leaves` (
+  `id` int(11) NOT NULL,
+  `users_id` int(11) NOT NULL,
+  `day_start` datetime NOT NULL,
+  `days` int(11) NOT NULL,
+  `status` int(1) NOT NULL DEFAULT '0',
+  `created` datetime NOT NULL,
+  `modified` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Contenu de la table `users_days_leaves`
+--
+
+INSERT INTO `users_days_leaves` (`id`, `users_id`, `day_start`, `days`, `status`, `created`, `modified`) VALUES
+(7, 18, '2017-01-30 00:00:00', 1, 0, '2017-01-12 10:33:25', '2017-01-12 10:33:25');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `users_days_offs`
+--
+
+CREATE TABLE `users_days_offs` (
+  `id` int(11) NOT NULL,
+  `users_id` int(11) NOT NULL,
+  `day_start` date NOT NULL,
+  `days` int(11) NOT NULL,
+  `status` int(1) NOT NULL DEFAULT '0',
+  `created` datetime NOT NULL,
+  `modified` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Contenu de la table `users_days_offs`
+--
+
+INSERT INTO `users_days_offs` (`id`, `users_id`, `day_start`, `days`, `status`, `created`, `modified`) VALUES
+(13, 18, '2017-01-14', 2, 0, '2017-01-10 13:14:02', '2017-01-10 13:14:02'),
+(14, 18, '2017-01-11', 2, 1, '2017-01-10 13:35:55', '2017-01-12 14:30:54'),
+(15, 18, '2017-01-30', 1, 1, '2017-01-12 10:30:48', '2017-01-12 14:30:19'),
+(16, 18, '2017-01-22', 1, 0, '2017-01-12 15:26:24', '2017-01-12 15:26:24');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `users_overtimes`
 --
 
 CREATE TABLE `users_overtimes` (
@@ -230,32 +289,38 @@ CREATE TABLE `users_overtimes` (
   `users_id` int(11) NOT NULL,
   `time_in` datetime NOT NULL,
   `time_out` datetime NOT NULL,
+  `type` int(11) NOT NULL DEFAULT '1',
+  `status` int(1) DEFAULT '0',
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `users_overtimes`
+-- Contenu de la table `users_overtimes`
 --
 
-INSERT INTO `users_overtimes` (`id`, `users_id`, `time_in`, `time_out`, `created`, `modified`) VALUES
-(1, 3, '2016-12-30 16:15:00', '2016-12-30 18:15:00', '2016-12-22 16:32:08', '2016-12-22 16:32:08'),
-(2, 2, '2016-12-30 17:30:00', '2016-12-30 19:30:00', '2016-12-22 16:37:20', '2016-12-22 16:37:20'),
-(3, 5, '2016-12-31 16:30:00', '2016-12-31 19:30:00', '2016-12-22 16:40:48', '2016-12-22 16:40:48'),
-(4, 2, '2016-12-31 17:30:00', '2016-12-31 21:30:00', '2016-12-30 14:32:20', '2016-12-30 14:32:20'),
-(5, 3, '2016-12-14 18:30:00', '2016-12-14 22:30:00', '2016-12-30 15:21:10', '2016-12-30 15:21:10');
+INSERT INTO `users_overtimes` (`id`, `users_id`, `time_in`, `time_out`, `type`, `status`, `created`, `modified`) VALUES
+(1, 3, '2016-12-30 16:15:00', '2016-12-30 18:15:00', 1, 0, '2016-12-22 16:32:08', '2016-12-22 16:32:08'),
+(2, 2, '2016-12-30 17:30:00', '2016-12-30 19:30:00', 1, 0, '2016-12-22 16:37:20', '2016-12-22 16:37:20'),
+(3, 18, '2017-01-06 16:30:00', '2017-01-06 19:30:00', 1, 0, '2016-12-22 16:40:48', '2016-12-22 16:40:48'),
+(4, 18, '2017-01-10 17:30:00', '2017-01-10 21:30:00', 3, 0, '2016-12-30 14:32:20', '2016-12-30 14:32:20'),
+(5, 18, '2017-01-04 18:30:00', '2017-01-04 22:30:00', 2, 0, '2016-12-30 15:21:10', '2016-12-30 15:21:10'),
+(6, 18, '2017-01-06 16:45:00', '2017-01-06 17:00:00', 1, 0, '2017-01-09 17:01:09', '2017-01-09 17:01:09'),
+(7, 18, '2017-01-28 19:30:00', '2017-01-28 21:30:00', 1, 1, '2017-01-12 10:45:33', '2017-01-12 14:20:24'),
+(8, 18, '2017-01-14 19:30:00', '2017-01-14 22:30:00', 3, 0, '2017-01-12 10:54:00', '2017-01-12 10:54:00'),
+(9, 18, '2017-01-07 20:45:00', '2017-01-07 22:45:00', 3, 0, '2017-01-12 10:56:58', '2017-01-12 10:56:58');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users_profiles`
+-- Structure de la table `users_profiles`
 --
 
 CREATE TABLE `users_profiles` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
-  `fullname` varchar(50) NOT NULL,
-  `phone_number` varchar(20) NOT NULL,
+  `fullname` varchar(50) DEFAULT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
   `avata` varchar(255) DEFAULT NULL,
   `cv` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
@@ -265,29 +330,28 @@ CREATE TABLE `users_profiles` (
   `salary` int(11) DEFAULT NULL,
   `currencies_id` int(11) DEFAULT NULL,
   `description` text,
-  `day_in_company` date NOT NULL,
+  `day_in_company` date DEFAULT NULL,
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `users_profiles`
+-- Contenu de la table `users_profiles`
 --
 
 INSERT INTO `users_profiles` (`id`, `users_id`, `fullname`, `phone_number`, `avata`, `cv`, `address`, `birthday`, `gender`, `atm`, `salary`, `currencies_id`, `description`, `day_in_company`, `created`, `modified`) VALUES
-(2, 3, '', '1981945175', '1482139287-Hydrangeas.jpg', '1482121835-PD01233_NguyenTrongHieu_Assignment2.doc', '696 TÃ´n Äá»©c Tháº¯ng', NULL, 1, '', 1000, 1, '', '0000-00-00', '2016-12-14 09:35:35', '2016-12-19 16:21:27'),
-(3, 4, 'Hieu Nguyen', '981945175', '1482121442-Jellyfish.jpg', '1482139265-TRÆ¯á»œNG CAO Äáº²NG THá»°C HÃ€NH FPT.docx', '696 TÃ´n Äá»©c Tháº¯ng', NULL, 1, '', 1000, 1, '', '0000-00-00', '2016-12-14 09:41:14', '2016-12-19 16:21:05'),
-(4, 5, 'Hieu Nguyen', '981945175', NULL, '1482139302-NguyenTrongHieu_PHP_Developer.docx', '696 TÃ´n Äá»©c Tháº¯ng', '1995-04-15', 1, '123456780987654345', 1000000000, 1, '', '2016-11-22', '2016-12-14 09:44:23', '2016-12-19 16:21:42'),
-(5, 6, 'Hieu Nguyen', '981945175', NULL, NULL, '696 TÃ´n Äá»©c Tháº¯ng', '1970-01-01', 1, '', 0, NULL, '', '0000-00-00', '2016-12-14 09:52:29', '2016-12-14 09:52:29'),
-(6, 7, 'Hieu Nguyen', '981945175', NULL, NULL, '696 TÃ´n Äá»©c Tháº¯ng', '1970-01-01', 1, '', 0, 1, '', '0000-00-00', '2016-12-14 09:53:36', '2016-12-14 09:53:36');
+(7, 18, 'Hieu Nguyen', '981945175', NULL, NULL, '696 TÃ´n Äá»©c Tháº¯ng', '1970-01-01', 1, '', NULL, NULL, '', '0000-00-00', '2017-01-09 10:38:35', '2017-01-09 10:38:35'),
+(10, 25, 'Hieu Nguyen', '0981945175', NULL, NULL, '696 TÃ´n Äá»©c Tháº¯ng', '1995-04-15', 1, '', NULL, NULL, 'Hot boy', NULL, '2017-01-11 17:22:58', '2017-01-11 17:22:58'),
+(11, 26, 'Nguyen Trong Hieu', '0981945175', NULL, NULL, '696 TÃ´n Äá»©c Tháº¯ng', '1995-01-01', 1, '', 8000000, NULL, '', NULL, '2017-01-12 15:25:12', '2017-01-12 15:25:12'),
+(12, 27, 'Hieu Nguyen 123', '981945175', NULL, NULL, '696 TÃ´n Äá»©c Tháº¯ng', '1983-01-01', 1, '', 10000000, NULL, '', NULL, '2017-01-12 16:05:27', '2017-01-12 16:05:27');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users_salaries`
+-- Structure de la table `users_salarys`
 --
 
-CREATE TABLE `users_salaries` (
+CREATE TABLE `users_salarys` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
   `salary` int(11) NOT NULL,
@@ -297,123 +361,192 @@ CREATE TABLE `users_salaries` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Indexes for dumped tables
+-- Contenu de la table `users_salarys`
+--
+
+INSERT INTO `users_salarys` (`id`, `users_id`, `salary`, `status`, `created`, `modified`) VALUES
+(20, 18, 12000000, 1, '2017-01-11 17:16:25', '2017-01-11 17:16:25'),
+(22, 25, 12000000, 0, '2017-01-12 09:07:28', '2017-01-12 09:07:28'),
+(23, 25, 8000000, 0, '2017-01-12 09:07:47', '2017-01-12 09:07:47'),
+(24, 25, 8000000, 0, '2017-01-12 09:11:14', '2017-01-12 09:11:14'),
+(25, 25, 15000000, 1, '2017-01-12 09:11:37', '2017-01-12 09:11:37'),
+(26, 26, 8000000, 1, '2017-01-12 15:25:12', '2017-01-12 15:25:12'),
+(27, 27, 10000000, 1, '2017-01-12 16:05:27', '2017-01-12 16:05:27');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `users_salarys_social_insurances`
+--
+
+CREATE TABLE `users_salarys_social_insurances` (
+  `id` int(11) NOT NULL,
+  `users_id` int(11) NOT NULL,
+  `salary` int(11) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1',
+  `created` datetime NOT NULL,
+  `modified` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Contenu de la table `users_salarys_social_insurances`
+--
+
+INSERT INTO `users_salarys_social_insurances` (`id`, `users_id`, `salary`, `status`, `created`, `modified`) VALUES
+(1, 18, 5000000, 1, '2017-01-11 00:00:00', '2017-01-11 00:00:00'),
+(2, 27, 3000000, 1, '2017-01-12 16:05:27', '2017-01-12 16:05:27');
+
+--
+-- Index pour les tables exportées
 --
 
 --
--- Indexes for table `calendars`
+-- Index pour la table `calendars`
 --
 ALTER TABLE `calendars`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `calendar_details`
+-- Index pour la table `calendar_details`
 --
 ALTER TABLE `calendar_details`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `currencies`
+-- Index pour la table `currencies`
 --
 ALTER TABLE `currencies`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `departments`
+-- Index pour la table `departments`
 --
 ALTER TABLE `departments`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `positions`
+-- Index pour la table `positions`
 --
 ALTER TABLE `positions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `roles`
+-- Index pour la table `roles`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Index pour la table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`,`email`);
 
 --
--- Indexes for table `users_overtimes`
+-- Index pour la table `users_days_leaves`
+--
+ALTER TABLE `users_days_leaves`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `users_days_offs`
+--
+ALTER TABLE `users_days_offs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `users_overtimes`
 --
 ALTER TABLE `users_overtimes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users_profiles`
+-- Index pour la table `users_profiles`
 --
 ALTER TABLE `users_profiles`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users_salaries`
+-- Index pour la table `users_salarys`
 --
-ALTER TABLE `users_salaries`
+ALTER TABLE `users_salarys`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- Index pour la table `users_salarys_social_insurances`
+--
+ALTER TABLE `users_salarys_social_insurances`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT pour les tables exportées
 --
 
 --
--- AUTO_INCREMENT for table `calendars`
+-- AUTO_INCREMENT pour la table `calendars`
 --
 ALTER TABLE `calendars`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 --
--- AUTO_INCREMENT for table `calendar_details`
+-- AUTO_INCREMENT pour la table `calendar_details`
 --
 ALTER TABLE `calendar_details`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=395;
 --
--- AUTO_INCREMENT for table `currencies`
+-- AUTO_INCREMENT pour la table `currencies`
 --
 ALTER TABLE `currencies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
--- AUTO_INCREMENT for table `departments`
+-- AUTO_INCREMENT pour la table `departments`
 --
 ALTER TABLE `departments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
--- AUTO_INCREMENT for table `positions`
+-- AUTO_INCREMENT pour la table `positions`
 --
 ALTER TABLE `positions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
--- AUTO_INCREMENT for table `roles`
+-- AUTO_INCREMENT pour la table `roles`
 --
 ALTER TABLE `roles`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 --
--- AUTO_INCREMENT for table `users_overtimes`
+-- AUTO_INCREMENT pour la table `users_days_leaves`
+--
+ALTER TABLE `users_days_leaves`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+--
+-- AUTO_INCREMENT pour la table `users_days_offs`
+--
+ALTER TABLE `users_days_offs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+--
+-- AUTO_INCREMENT pour la table `users_overtimes`
 --
 ALTER TABLE `users_overtimes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 --
--- AUTO_INCREMENT for table `users_profiles`
+-- AUTO_INCREMENT pour la table `users_profiles`
 --
 ALTER TABLE `users_profiles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
--- AUTO_INCREMENT for table `users_salaries`
+-- AUTO_INCREMENT pour la table `users_salarys`
 --
-ALTER TABLE `users_salaries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `users_salarys`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+--
+-- AUTO_INCREMENT pour la table `users_salarys_social_insurances`
+--
+ALTER TABLE `users_salarys_social_insurances`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

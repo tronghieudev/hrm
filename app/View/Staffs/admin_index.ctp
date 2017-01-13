@@ -23,19 +23,16 @@
 				$.ajax({
 					url: ADMIN+'/staffs/getById',
 					type: 'POST',
-					data: {id: id},
+					data: {users_id: id},
 				})
 				.done(function(output) {
 
-					if(output.data.UsersProfile.salary) {
-						$('#update-salary #input-salary').val(output.data.UsersProfile.salary);
+					if(output.data.Salary.salary) {
+						$('#update-salary #input-salary').val(output.data.Salary.salary);
 					}else{
 						$('#update-salary #input-salary').val('');
 					}
-					$('#update-salary #input-id').val(output.data.UsersProfile.id);
-					if(output.data.UsersProfile.currencies_id) {
-						$('#select-currency').val(output.data.UsersProfile.currencies_id);
-					}
+					$('#update-salary #input-id').val(output.data.User.id);
 					$('#update-salary').modal('show');
 				});
 			});
@@ -52,11 +49,11 @@
 				submitHandler: function(form) {
 			    	var salary = $('input[name="salary"]').val();
 			    	var currencies_id = $('select[name="currencies_id"]').val();
-			    	var id = $('input[name="id"]').val();
+			    	var id = $('input[name="users_id"]').val();
 		    		$.ajax({
 						url: ADMIN+'/staffs/updateSalary',
 						type: 'POST',
-						data: {salary: salary, currencies_id: currencies_id, id : id},
+						data: {salary: salary, currencies_id: currencies_id, users_id : id},
 					}).done(function(output) {
 						if(output.status == 200) {
 							alert(output.data.message);
@@ -159,13 +156,14 @@
 			    	var time_in_time = $('input[name="time_in_time"]').val();
 			    	var time_out_date = $('input[name="time_out_date"]').val();
 			    	var time_out_time = $('input[name="time_out_time"]').val();
+			    	var type = $('input[name="type"]:checked').val();
 			    	var id = $('#form-overtime .id').val();
 			    	
 		    		$.ajax({
 
 						url: ADMIN+'/staffs/setOvertime',
 						type: 'POST',
-						data: {id : id, time_in_date: time_in_date, time_in_time: time_in_time, time_out_date : time_out_date, time_out_time : time_out_time},
+						data: {id : id, type : type,time_in_date: time_in_date, time_in_time: time_in_time, time_out_date : time_out_date, time_out_time : time_out_time},
 					}).done(function(output) {
 						if(output.status == 200) {
 							alert('Set over time success !');
@@ -481,9 +479,9 @@
 						<div class="form-group">
 							<label>Salary</label>
 							<input class="form-control" name="salary" id="input-salary"></input>
-							<input class="form-control" type="hidden" name="id" id="input-id"></input>
+							<input class="form-control" type="hidden" name="users_id" id="input-id"></input>
 						</div>
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<label>Currency</label>
 							<select name="currencies_id" class="form-control" id="select-currency">
 								<?php 
@@ -492,7 +490,7 @@
 									}
 								?>
 							</select>
-						</div>
+						</div> -->
 					</div> 
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -621,6 +619,17 @@
 										<!-- /.form group -->
 									</div>
 								</div>	
+								<div class="col-sm-12">
+									<label class="radio-inline">
+										<input type="radio" name="type" id="" value="1" checked=""> Ngày bình thường
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="type" id="" value="2"> Ngày nghỉ
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="type" id="" value="3"> Ngày lễ
+									</label>
+								</div>	
 								<div class="clearfix"></div>			
 								
 							</div>
@@ -686,20 +695,20 @@
 				
 			    <?php foreach($data as $item) { ?>
 		            <tr id="tr<?php echo $item['UsersProfile']['id']; ?>">
-		                <td><?php echo $item['UsersProfile']['id']; ?></td>
+		                <td><?php echo $item['UsersProfile']['users_id']; ?></td>
 		                <td class="name">
-		                <?php 
-		                	echo $this->Html->link(
-								$item['UsersProfile']['fullname'],
-								array(
-								    'controller' => 'staffs',
-								    'action' => 'show',
-								    'admin' => true,
-								    '?' => ['id' => $item['UsersProfile']['users_id']]
-								)
-							); 
-						?>
-</td>
+			                <?php 
+			                	echo $this->Html->link(
+									$item['UsersProfile']['fullname'],
+									array(
+									    'controller' => 'staffs',
+									    'action' => 'show',
+									    'admin' => true,
+									    '?' => ['id' => $item['UsersProfile']['users_id']]
+									)
+								); 
+							?>
+						</td>
 		                <td><?= $item['User']['email']; ?></td>
 		                
 		                <td><?= $item['UsersProfile']['phone_number']; ?></td>

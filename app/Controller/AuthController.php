@@ -55,7 +55,7 @@ class AuthController extends AppController {
     /**
      *
      */
-    public function admin_notPermission() {
+    public function notPermission() {
 
         debug('You not permission');die();
     }

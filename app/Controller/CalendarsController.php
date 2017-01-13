@@ -30,8 +30,8 @@ class CalendarsController extends USController
 
         if (isset($this->request->query['day']) && !empty($this->request->query['day'])) {
             $time = strtotime($this->request->query['day']);
-            // debug($time);
         }
+
         $days = [];
 
         for($i = $time; $i <= $time + 24*60*60*6; $i+=24*60*60){
@@ -56,7 +56,7 @@ class CalendarsController extends USController
             $day = date('Y-m-d', strtotime($val['Calendar']['time_in']));
                 $result[$day][] = $val;
         }
-        // debug($data);die;
+
         $this->set('days', $days);
         $this->set('data', $result);
         $this->set('user_id', $this->Auth->user('id'));
@@ -163,7 +163,6 @@ class CalendarsController extends USController
                 ]
             ]);
 
-            // debug($check_time); die;
             if (!empty($check_time)) {
                 return $this->_falseJson(Constants::BAD_REQUEST, null, ['message' => 'Mù à không thấy có người đặt giờ này oy à. Óc quẹo!']);
             }
@@ -236,7 +235,6 @@ class CalendarsController extends USController
     /**
      *
      */
-
     public function remove() {
         $this->autoRender = false;
         if($this->request->is('ajax')){

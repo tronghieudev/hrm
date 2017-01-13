@@ -59,24 +59,50 @@
 						<?php } ?>
 					</select>
 				</div>
-				<!-- <div class="form-group">
-					<label>Avata</label>
-					<input type="file" class="form-control" name="avata" required="required"></input>
-				</div> -->
-				<!-- <div class="form-group">
-					<label>CV</label>
-					<input type="file" class="form-control" name="cv"></input>
-				</div> -->
 				<div class="form-group">
 					<label>Address <i class="requi">*</i></label>
 					<input class="form-control" name="address" required="required"></input>
-				</div>				
+				</div>
+
 				<div class="form-group">
 					<label>PhoneNumber <i class="requi">*</i></label>
 					<input class="form-control" name="phone_number" required="required"></input>
 				</div>
+				<div class="form-group">
+					<label>Salary <i class="requi">*</i></label>
+					<input class="form-control" type="number" name="salary" required="required"></input>
+				</div>
+				<div class="form-group">
+					<label>Ăn Trưa</label>
+					<input class="form-control" name="money_lunch" ></input>
+				</div>
+				<div class="form-group">
+					<label>Điện Thoại</label>
+					<input class="form-control" name="money_phone" ></input>
+				</div>
+				<div class="form-group">
+					<label>Trợ cấp trang phục</label>
+					<input class="form-control" name="money_costume"></input>
+				</div>
+				
 			</div>
 			<div class="col-sm-6">
+				<div class="form-group">
+					<label>Xăng Xe</label>
+					<input class="form-control" name="money_gasoline"></input>
+				</div>
+				<div class="form-group">
+					<label>Hỗ trợ nhà ở</label>
+					<input class="form-control" name="money_house" ></input>
+				</div>
+				<div class="form-group">
+					<label>Hệ số hoàn thành công việc</label>
+					<input class="form-control" name="money_complete"></input>
+				</div>
+				<div class="form-group">
+					<label>Lương theo hiệu quả công việc</label>
+					<input class="form-control" name="money_efficiency"></input>
+				</div>
 				<div class="form-group">
 					<label>ATM</label>
 					<input class="form-control" name="atm"></input>
