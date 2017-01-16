@@ -122,11 +122,8 @@ class User extends AppModel {
                 'message' => 'Department is required',
                 'required' => true
             ),
-            // 'haveDep' => array(
-            //     'rule'    => array('isDep'),
-            //     'message' => 'This department null'
-            // )
-        ]
+        ],
+        
     ];
 
     // check qualto password confim
